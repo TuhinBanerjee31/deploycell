@@ -32,7 +32,6 @@ const getAllFiles = (folderPath: string) => {
   return response;
 };
 
-//Token value- iePoFyTAhDmvRtcrgU76YwGgrpD6qPmSLN5aJbj3
 const s3 = new S3({
   accessKeyId: process.env.R2_KEYID,
   secretAccessKey: process.env.R2_SECERT,
