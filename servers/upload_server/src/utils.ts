@@ -39,14 +39,31 @@ const s3 = new S3({
 })
 
 const uploadFile = async (fileName: string, localFilePath: string) => {
-  const fileContent = fs.readFileSync(localFilePath);
-  const response = await s3.upload({
-    Body: fileContent,
-    Bucket: "deploycell",
-    Key: fileName,
-  }).promise();
+  try {
+    // Normalize the file path to use forward slashes
+    const normalizedKey = fileName.replace(/\\/g, "/");
 
-  console.log(response);
-}
+    // Read the file content
+    if (!fs.existsSync(localFilePath)) {
+      throw new Error(`File not found at path: ${localFilePath}`);
+    }
+    const fileContent = fs.readFileSync(localFilePath);
+
+    // Upload to S3
+    const response = await s3
+      .upload({
+        Body: fileContent,
+        Bucket: "deploycell",
+        Key: normalizedKey, // Use normalized key
+      })
+      .promise();
+
+    console.log("File uploaded successfully:", response);
+    return response;
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    throw error;
+  }
+};
 
 export { generate, getAllFiles, uploadFile };

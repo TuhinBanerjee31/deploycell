@@ -48,12 +48,28 @@ const s3 = new aws_sdk_1.S3({
     endpoint: process.env.R2_ENDPOINT
 });
 const uploadFile = (fileName, localFilePath) => __awaiter(void 0, void 0, void 0, function* () {
-    const fileContent = fs_1.default.readFileSync(localFilePath);
-    const response = yield s3.upload({
-        Body: fileContent,
-        Bucket: "deploycell",
-        Key: fileName,
-    }).promise();
-    console.log(response);
+    try {
+        // Normalize the file path to use forward slashes
+        const normalizedKey = fileName.replace(/\\/g, "/");
+        // Read the file content
+        if (!fs_1.default.existsSync(localFilePath)) {
+            throw new Error(`File not found at path: ${localFilePath}`);
+        }
+        const fileContent = fs_1.default.readFileSync(localFilePath);
+        // Upload to S3
+        const response = yield s3
+            .upload({
+            Body: fileContent,
+            Bucket: "deploycell",
+            Key: normalizedKey, // Use normalized key
+        })
+            .promise();
+        console.log("File uploaded successfully:", response);
+        return response;
+    }
+    catch (error) {
+        console.error("Error uploading file:", error);
+        throw error;
+    }
 });
 exports.uploadFile = uploadFile;
