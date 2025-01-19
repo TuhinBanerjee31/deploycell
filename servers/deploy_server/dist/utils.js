@@ -79,39 +79,52 @@ function downloadS3Folder(prefix) {
 }
 exports.downloadS3Folder = downloadS3Folder;
 function buildProject(id) {
-    return new Promise((resolve, reject) => {
-        var _a, _b;
-        const child = (0, child_process_1.exec)(`cd ${path_1.default.join(__dirname, `output/${id}`)} && npm install && npm run build`);
-        (_a = child.stdout) === null || _a === void 0 ? void 0 : _a.on("data", (data) => {
-            console.log("stdout: " + data);
-        });
-        (_b = child.stderr) === null || _b === void 0 ? void 0 : _b.on("data", (data) => {
-            console.error("stderr: " + data);
-        });
-        child.on("close", (code) => {
-            if (code === 0) {
-                console.log(`Build completed for project: ${id}`);
-                resolve(true);
-            }
-            else {
-                reject(new Error(`Build failed for project: ${id} with exit code ${code}`));
-            }
-        });
-        child.on("error", (err) => {
-            reject(new Error(`Failed to start build process: ${err.message}`));
-        });
+    return __awaiter(this, void 0, void 0, function* () {
+        const projectPath = path_1.default.join(__dirname, `output/${id}`);
+        const packageJsonPath = path_1.default.join(projectPath, "package.json");
+        if (fs_1.default.existsSync(packageJsonPath)) {
+            console.log(`Building project: ${id}`);
+            return new Promise((resolve, reject) => {
+                var _a, _b;
+                const child = (0, child_process_1.exec)(`cd ${projectPath} && npm install && npm run build`);
+                (_a = child.stdout) === null || _a === void 0 ? void 0 : _a.on("data", (data) => {
+                    console.log("stdout: " + data);
+                });
+                (_b = child.stderr) === null || _b === void 0 ? void 0 : _b.on("data", (data) => {
+                    console.error("stderr: " + data);
+                });
+                child.on("close", (code) => {
+                    if (code === 0) {
+                        console.log(`Build completed for project: ${id}`);
+                        resolve(true);
+                    }
+                    else {
+                        reject(new Error(`Build failed for project: ${id} with exit code ${code}`));
+                    }
+                });
+                child.on("error", (err) => {
+                    reject(new Error(`Failed to start build process: ${err.message}`));
+                });
+            });
+        }
+        else {
+            console.log(`No build required for project: ${id} (plain HTML/CSS/JS files).`);
+        }
     });
 }
 exports.buildProject = buildProject;
 function copyFinalDist(id) {
     return __awaiter(this, void 0, void 0, function* () {
-        const folderPath = path_1.default.join(__dirname, `output/${id}/dist`);
-        if (!fs_1.default.existsSync(folderPath)) {
-            console.error(`Folder not found: ${folderPath}`);
+        const projectPath = path_1.default.join(__dirname, `output/${id}`);
+        const distPath = fs_1.default.existsSync(path_1.default.join(projectPath, "dist"))
+            ? path_1.default.join(projectPath, "dist")
+            : projectPath; // Use root folder if no "dist" exists
+        if (!fs_1.default.existsSync(distPath)) {
+            console.error(`Folder not found: ${distPath}`);
             return;
         }
-        const allFiles = getAllFiles(folderPath);
-        const uploadPromises = allFiles.map((file) => uploadFile(`dist/${id}/` + file.slice(folderPath.length + 1), file));
+        const allFiles = getAllFiles(distPath);
+        const uploadPromises = allFiles.map((file) => uploadFile(`dist/${id}/` + file.slice(distPath.length + 1), file));
         yield Promise.all(uploadPromises);
         console.log("All files uploaded successfully.");
     });

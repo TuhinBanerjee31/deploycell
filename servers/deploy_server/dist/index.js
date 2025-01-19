@@ -28,6 +28,7 @@ function main() {
                 yield (0, utils_1.buildProject)(id);
                 console.log(`Build completed for ID: ${id}`);
                 (0, utils_1.copyFinalDist)(id);
+                publisher.hSet("status", id, "deployed");
                 console.log(`Files uploaded for ID: ${id}`);
             }
             catch (error) {

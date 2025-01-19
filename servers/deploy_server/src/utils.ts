@@ -1,5 +1,5 @@
 import { S3 } from "aws-sdk";
-import {exec, spawn} from "child_process";
+import { exec } from "child_process";
 import fs from "fs";
 import path from "path";
 import "dotenv/config";
@@ -67,44 +67,57 @@ async function downloadS3Folder(prefix: string) {
   }
 }
 
-function buildProject(id: string) {
-  return new Promise((resolve, reject) => {
-    const child = exec(
-      `cd ${path.join(__dirname, `output/${id}`)} && npm install && npm run build`
-    );
+async function buildProject(id: string) {
+  const projectPath = path.join(__dirname, `output/${id}`);
+  const packageJsonPath = path.join(projectPath, "package.json");
 
-    child.stdout?.on("data", (data) => {
-      console.log("stdout: " + data);
-    });
+  if (fs.existsSync(packageJsonPath)) {
+    console.log(`Building project: ${id}`);
+    return new Promise((resolve, reject) => {
+      const child = exec(
+        `cd ${projectPath} && npm install && npm run build`
+      );
 
-    child.stderr?.on("data", (data) => {
-      console.error("stderr: " + data);
-    });
+      child.stdout?.on("data", (data) => {
+        console.log("stdout: " + data);
+      });
 
-    child.on("close", (code) => {
-      if (code === 0) {
-        console.log(`Build completed for project: ${id}`);
-        resolve(true);
-      } else {
-        reject(new Error(`Build failed for project: ${id} with exit code ${code}`));
-      }
-    });
+      child.stderr?.on("data", (data) => {
+        console.error("stderr: " + data);
+      });
 
-    child.on("error", (err) => {
-      reject(new Error(`Failed to start build process: ${err.message}`));
+      child.on("close", (code) => {
+        if (code === 0) {
+          console.log(`Build completed for project: ${id}`);
+          resolve(true);
+        } else {
+          reject(new Error(`Build failed for project: ${id} with exit code ${code}`));
+        }
+      });
+
+      child.on("error", (err) => {
+        reject(new Error(`Failed to start build process: ${err.message}`));
+      });
     });
-  });
+  } else {
+    console.log(`No build required for project: ${id} (plain HTML/CSS/JS files).`);
+  }
 }
 
 async function copyFinalDist(id: string) {
-  const folderPath = path.join(__dirname, `output/${id}/dist`);
-  if (!fs.existsSync(folderPath)) {
-    console.error(`Folder not found: ${folderPath}`);
+  const projectPath = path.join(__dirname, `output/${id}`);
+  const distPath = fs.existsSync(path.join(projectPath, "dist"))
+    ? path.join(projectPath, "dist")
+    : projectPath; // Use root folder if no "dist" exists
+
+  if (!fs.existsSync(distPath)) {
+    console.error(`Folder not found: ${distPath}`);
     return;
   }
-  const allFiles = getAllFiles(folderPath);
+
+  const allFiles = getAllFiles(distPath);
   const uploadPromises = allFiles.map((file) =>
-    uploadFile(`dist/${id}/` + file.slice(folderPath.length + 1), file)
+    uploadFile(`dist/${id}/` + file.slice(distPath.length + 1), file)
   );
   await Promise.all(uploadPromises);
   console.log("All files uploaded successfully.");
@@ -141,4 +154,4 @@ const uploadFile = async (fileName: string, localFilePath: string) => {
   console.log(`Uploaded: ${normalizedKey}`, response);
 };
 
-export {downloadS3Folder, buildProject, copyFinalDist};
+export { downloadS3Folder, buildProject, copyFinalDist };

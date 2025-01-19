@@ -27,6 +27,7 @@ async function main() {
       console.log(`Build completed for ID: ${id}`);
 
       copyFinalDist(id);
+      publisher.hSet("status", id,"deployed")
       console.log(`Files uploaded for ID: ${id}`);
     } catch (error) {
       console.error("An error occurred during processing:", error);

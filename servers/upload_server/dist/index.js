@@ -36,12 +36,12 @@ app.post("/deploy", (req, res) => __awaiter(void 0, void 0, void 0, function* ()
     }));
     yield new Promise((resolve) => setTimeout(resolve, 5000));
     publisher.lPush("build-queue", id);
-    // publisher.hSet("status", id, "uploaded");
+    publisher.hSet("status", id, "uploaded");
     res.json({ id: id });
 }));
-// app.get("/status",  async (req,res) => {
-//     const id = req.query.id;
-//     const response = await subscriber.hGet("status", id as string);
-//     res.json({status: response});
-// })
+app.get("/status", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const id = req.query.id;
+    const response = yield subscriber.hGet("status", id);
+    res.json({ status: response });
+}));
 app.listen(3000, () => console.log("Listening on port 3000"));
