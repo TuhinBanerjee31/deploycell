@@ -35,7 +35,9 @@ const getAllFiles = (folderPath: string) => {
 const s3 = new S3({
   accessKeyId: process.env.R2_KEYID,
   secretAccessKey: process.env.R2_SECERT,
-  endpoint: process.env.R2_ENDPOINT
+  endpoint: process.env.R2_ENDPOINT,
+  region: "auto",
+  s3ForcePathStyle: true,
 })
 
 const uploadFile = async (fileName: string, localFilePath: string) => {

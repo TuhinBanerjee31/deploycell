@@ -22,6 +22,8 @@ const s3 = new aws_sdk_1.S3({
     accessKeyId: process.env.R2_KEYID,
     secretAccessKey: process.env.R2_SECERT,
     endpoint: process.env.R2_ENDPOINT,
+    region: "auto",
+    s3ForcePathStyle: true,
 });
 function downloadS3Folder(prefix) {
     return __awaiter(this, void 0, void 0, function* () {
