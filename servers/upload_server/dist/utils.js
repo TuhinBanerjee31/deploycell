@@ -17,6 +17,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const aws_sdk_1 = require("aws-sdk");
 require("dotenv/config");
+//To generate random unique string/id
 const generate = () => {
     const subset = "123456789qwertyuiopasdfghjklzxcvbnm";
     const length = 5;
@@ -27,6 +28,7 @@ const generate = () => {
     return id;
 };
 exports.generate = generate;
+//Getting all file path-name wise
 const getAllFiles = (folderPath) => {
     let response = [];
     const allFilesAndFolders = fs_1.default.readdirSync(folderPath);
@@ -42,6 +44,7 @@ const getAllFiles = (folderPath) => {
     return response;
 };
 exports.getAllFiles = getAllFiles;
+//Setting up cloud-flare s3 bucket connection
 const s3 = new aws_sdk_1.S3({
     accessKeyId: process.env.R2_KEYID,
     secretAccessKey: process.env.R2_SECERT,
@@ -49,6 +52,7 @@ const s3 = new aws_sdk_1.S3({
     region: "auto",
     s3ForcePathStyle: true,
 });
+//Uploading all files to cloud-flare object store
 const uploadFile = (fileName, localFilePath) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Normalize the file path to use forward slashes

@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import "dotenv/config";
 
+//Setting up cloud-flare S3 buckect connection
 const s3 = new S3({
   accessKeyId: process.env.R2_KEYID,
   secretAccessKey: process.env.R2_SECERT,
@@ -12,6 +13,7 @@ const s3 = new S3({
   s3ForcePathStyle: true,
 });
 
+//Download all the codebase files from object store
 async function downloadS3Folder(prefix: string) {
   try {
     const allFiles = await s3
@@ -69,6 +71,7 @@ async function downloadS3Folder(prefix: string) {
   }
 }
 
+//Creates production build file
 async function buildProject(id: string) {
   const projectPath = path.join(__dirname, `output/${id}`);
   const packageJsonPath = path.join(projectPath, "package.json");
@@ -106,6 +109,7 @@ async function buildProject(id: string) {
   }
 }
 
+//Get now the dist paths from output folder and sets and uploads over the object-store
 async function copyFinalDist(id: string) {
   const projectPath = path.join(__dirname, `output/${id}`);
   const distPath = fs.existsSync(path.join(projectPath, "dist"))

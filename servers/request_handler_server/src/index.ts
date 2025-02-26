@@ -13,6 +13,7 @@ const s3 = new S3({
 
 const app = express();
 
+//Directs the build contains to a web url
 app.get("/*", async (req, res) => {
     try {
         const host = req.hostname;
