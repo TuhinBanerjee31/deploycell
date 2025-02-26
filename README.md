@@ -8,7 +8,7 @@ DeployCell is a powerful tool designed to make the process of hosting and servin
 
 - Ensure you have Node.js, npm and typescript installed on your machine.
 
-- Clone the repository or add the component to your existing React project.
+- Clone the repository and add to your local environment.
 
 - Install the required dependencies.
 
