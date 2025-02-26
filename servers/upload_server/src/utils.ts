@@ -3,6 +3,7 @@ import path from "path";
 import {S3} from "aws-sdk";
 import 'dotenv/config'
 
+//To generate random unique string/id
 const generate = () => {
   const subset = "123456789qwertyuiopasdfghjklzxcvbnm";
   const length = 5;
@@ -15,6 +16,7 @@ const generate = () => {
   return id;
 };
 
+//Getting all file path-name wise
 const getAllFiles = (folderPath: string) => {
   let response: string[] = [];
 
@@ -32,6 +34,7 @@ const getAllFiles = (folderPath: string) => {
   return response;
 };
 
+//Setting up cloud-flare s3 bucket connection
 const s3 = new S3({
   accessKeyId: process.env.R2_KEYID,
   secretAccessKey: process.env.R2_SECERT,
@@ -40,6 +43,7 @@ const s3 = new S3({
   s3ForcePathStyle: true,
 })
 
+//Uploading all files to cloud-flare object store
 const uploadFile = async (fileName: string, localFilePath: string) => {
   try {
     // Normalize the file path to use forward slashes
