@@ -13,14 +13,17 @@ DeployCell is a powerful tool designed to make the process of hosting and servin
 - Install the required dependencies.
 
 ```bash
-  npm install aws-sdk dotenv redis express mime-types cors simple-git
+  cd servers
+  cd upload_server
+  npm install
+  cd ..
+  cd deploy_server
+  npm install
+  cd ..
+  cd request_handler_server
+  npm install
 ```
 
-- Install the required dev dependencies.
-
-```bash
-  npm install --save @types/node @types/express @types/mime-types @types/express
-```
 ## Environment Variables
 
 Create a [Cloud Flare](https://developers.cloudflare.com/r2/) account and get your S3 bucket ready because to run this project, you will need to add the following environment variables to your .env file inside all the servers folder.
