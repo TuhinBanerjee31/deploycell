@@ -146,6 +146,8 @@ app.post("/direct", async (req, res) => {
             { name: "GIT_REPO_URL", value: gitURL },
             { name: "PROJECT_ID", value: projectSlug },
             { name: "REDIS_URL", value: process.env.REDIS_URL },
+            { name: "ACCESS_KEY_ID", value: process.env.ACCESS_KEY_ID },
+            { name: "SECRET_KEY", value: process.env.SECRET_KEY }
           ],
         },
       ],

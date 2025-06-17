@@ -8,8 +8,8 @@ const Redis = require("ioredis");
 const client = new S3Client({
   region: "eu-north-1",
   credentials: {
-    accessKeyId: "AKIAQYEI5BHXVE5G6447",
-    secretAccessKey: "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",
+    accessKeyId: process.env.ACCESS_KEY_ID,
+    secretAccessKey: process.env.SECRET_KEY,
   },
 });
 
