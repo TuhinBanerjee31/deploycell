@@ -6,21 +6,13 @@ const cors = require("cors");
 const Redis = require("ioredis");
 const { Server } = require("socket.io");
 const { z } = require("zod");
-const { PrismaClient } = require("@prisma/client");
-const { createClient } = require("@clickhouse/client");
-const { Kafka } = require("kafkajs");
-const { v4: uuidv4 } = require("uuid");
-const fs = require("fs");
-const path = require("path");
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 const PORT = 9000;
 
-const subscriber = new Redis(
-  "rediss://default:AVNS_ENXlC6iqpu02dbPwMvy@valkey-18e51184-tuhinbanerjee0231-4f38.b.aivencloud.com:25150"
-);
+const subscriber = new Redis(process.env.REDIS_URL);
 const io = new Server({ cors: "*" });
 
 io.on("connection", (socket) => {
@@ -31,28 +23,6 @@ io.on("connection", (socket) => {
 });
 
 io.listen(9001, () => console.log("Socket Server running on 9001"));
-
-// const prisma = new PrismaClient({});
-
-// const clickhouseClient = createClient({
-//   host: "https://clickhouse-1cc31952-tuhinbanerjee0231-4f38.g.aivencloud.com:25150",
-//   database: "default",
-//   username: "avnadmin",
-//   password: "AVNS_Sc_DEd391vQD_ijq0TM",
-// });
-
-// const kafka = new Kafka({
-//   clientId: `api-server`,
-//   brokers: ["kafka-1fda478f-tuhinbanerjee0231-4f38.l.aivencloud.com:25162"],
-//   ssl: {
-//     ca: [fs.readFileSync(path.join(__dirname, "kafka.pem"), "utf-8")],
-//   },
-//   sasl: {
-//     username: "avnadmin",
-//     password: "AVNS_-D4veAk3ctSa8fQoYyy",
-//     mechanism: "plain",
-//   },
-// });
 
 const config = {
   CLUSTER: process.env.CLUSTER_ARN,
@@ -175,6 +145,7 @@ app.post("/direct", async (req, res) => {
           environment: [
             { name: "GIT_REPO_URL", value: gitURL },
             { name: "PROJECT_ID", value: projectSlug },
+            { name: "REDIS_URL", value: process.env.REDIS_URL },
           ],
         },
       ],

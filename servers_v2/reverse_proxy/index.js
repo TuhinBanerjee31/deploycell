@@ -1,10 +1,11 @@
+require('dotenv').config()
 const express = require('express')
 const httpProxy = require('http-proxy')
 
 const app = express()
 const PORT = 8000
 
-const BASE_PATH = 'https://deploycell.s3.eu-north-1.amazonaws.com/__output'
+const BASE_PATH = process.env.AWS_BASE_PATH;
 
 const proxy = httpProxy.createProxy()
 
