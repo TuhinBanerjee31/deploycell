@@ -12,6 +12,7 @@ const proxy = httpProxy.createProxy()
 app.use((req, res) => {
     const hostname = req.hostname;
     const subdomain = hostname.split('.')[0];
+    console.log(subdomain)
 
     // Custom Domain - DB Query
 
