@@ -3,7 +3,7 @@ const express = require('express')
 const httpProxy = require('http-proxy')
 
 const app = express()
-const PORT = 8000
+const port = process.env.PORT || 8000
 
 const BASE_PATH = process.env.AWS_BASE_PATH;
 
@@ -18,7 +18,7 @@ app.use((req, res) => {
 
     const resolvesTo = `${BASE_PATH}/${subdomain}`
 
-    return proxy.web(req, res, { target: resolvesTo, changeOrigin: true })
+    return proxy.web(req, res, { target: resolvesTo, changeOrigin: true, secure: false })
 
 })
 
@@ -29,4 +29,4 @@ proxy.on('proxyReq', (proxyReq, req, res) => {
 
 })
 
-app.listen(PORT, () => console.log(`Reverse Proxy Running..${PORT}`))
+app.listen(port, () => console.log(`Reverse Proxy Running..${port}`))
