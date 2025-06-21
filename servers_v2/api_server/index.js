@@ -157,7 +157,7 @@ app.post("/direct", async (req, res) => {
   await ecsClient.send(command);
 
   return res.json({
-    data: { projectSlug, url: `https://${projectSlug}.${process.env.SERVE_URL}` },
+    data: { projectSlug, url: `http://${projectSlug}.${process.env.SERVE_URL}` },
   });
 });
 
